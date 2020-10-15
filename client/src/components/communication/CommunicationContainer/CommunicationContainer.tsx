@@ -14,6 +14,7 @@ import { axiosConfig } from '../../../common/helpers';
 import Chat from '../Chat/Chat';
 import CommunicationBar from '../CommunicationBar/CommunicationBar';
 import WebRtc from '../WebRtc/WebRtc';
+import stringify from 'json-stringify-safe';
 
 interface Props {
     socket: SocketIOClient.Socket | null;
@@ -88,6 +89,14 @@ export default function CommunicationContainer({
                 key: webRtcServerKey,
                 debug: process.env.NODE_ENV === 'development' ? 2 : 0,
                 secure: process.env.NODE_ENV === 'production'
+            });
+
+            peer.on('disconnected', () => {
+                alert('peer disconnected');
+            });
+
+            peer.on('error', (error) => {
+                alert('peer error:\n\n' + stringify(error, null, 4));
             });
 
             setWebRtcPeer(peer);
@@ -227,6 +236,10 @@ export default function CommunicationContainer({
                     });
                 });
 
+                call.on('error', (error) => {
+                    alert('call error:\n\n' + stringify(error, null, 4));
+                });
+
                 // call.on('close', () => {
                 //     hangUpOnUser(theirWebRtcId);
                 // });
@@ -261,6 +274,10 @@ export default function CommunicationContainer({
                             ...mediaStreamsRef.current,
                             [theirWebRtcId]: theirStream
                         });
+                    });
+
+                    call.on('error', (error) => {
+                        alert('call error:\n\n' + stringify(error, null, 4));
                     });
 
                     // call.on('close', () => {
