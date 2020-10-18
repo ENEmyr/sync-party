@@ -254,7 +254,7 @@ export default function CommunicationContainer({
                 // };
             }
         },
-        [webRtcPeer, hangUpOnUser]
+        [webRtcPeer]
     );
 
     const handleCall = useCallback(
@@ -295,7 +295,7 @@ export default function CommunicationContainer({
                 }
             }
         },
-        [ourWebRtcId, hangUpOnUser]
+        [ourWebRtcId]
     );
 
     // Handle RTC
