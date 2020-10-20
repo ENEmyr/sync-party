@@ -24,6 +24,7 @@ interface Props {
     setPlayerState: Function;
     uiVisible: boolean;
     freezeUiVisible: Function;
+    handlePlayPause: Function;
 }
 
 export default function CommunicationContainer({
@@ -33,7 +34,8 @@ export default function CommunicationContainer({
     ourUserId,
     setPlayerState,
     uiVisible,
-    freezeUiVisible
+    freezeUiVisible,
+    handlePlayPause
 }: Props): ReactElement {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -425,6 +427,7 @@ export default function CommunicationContainer({
                 ourUserId={ourUserId}
                 webRtcIds={webRtcIds}
                 showVideos={showVideos}
+                handlePlayPause={handlePlayPause}
             ></WebRtc>
             {uiVisible && (
                 <CommunicationBar
