@@ -3,6 +3,7 @@ import https from 'https';
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import { CronJob } from 'cron';
 
 import { Sequelize } from 'sequelize';
 
@@ -109,12 +110,37 @@ const runApp = async () => {
 
     // DEFAULT VALUES
 
+    const persistentValues = fs.existsSync('./persistence.json')
+        ? JSON.parse(fs.readFileSync('./persistence.json', 'utf-8'))
+        : {
+              currentPlayWishes: {},
+              lastPositions: {}
+          };
+
     const currentSyncStatus: {
-        [partyId: string]: { [userId: string]: object }; // FIXME type
+        [partyId: string]: { [userId: string]: SyncStatus };
     } = {};
     const currentPlayWishes: {
-        [partyId: string]: object;
-    } = {};
+        [partyId: string]: PlayWish;
+    } = persistentValues.currentPlayWishes;
+    const lastPositions: {
+        [partyId: string]: { [itemId: string]: number };
+    } = persistentValues.lastPositions;
+
+    new CronJob(
+        '*/15 * * * *',
+        () => {
+            fs.writeFileSync(
+                path.join('./persistence.json'),
+                JSON.stringify({
+                    currentPlayWishes,
+                    lastPositions
+                })
+            );
+        },
+        null,
+        false
+    ).start();
 
     // MIDDLEWARE
 
@@ -280,6 +306,37 @@ const runApp = async () => {
                 timestamp:
                     playWish.timestamp + (Date.now() - playWish.timestamp)
             };
+
+            // Save position of previous item, if delivered
+            if (playWish.lastPosition) {
+                if (!lastPositions[playWish.partyId]) {
+                    lastPositions[playWish.partyId] = {};
+                }
+
+                lastPositions[playWish.partyId][playWish.lastPosition.itemId] =
+                    playWish.lastPosition.position;
+            }
+
+            // Attach last position of the requested item
+            if (
+                playWishWithNormalizedTimestamp.requestLastPosition &&
+                lastPositions[playWish.partyId] &&
+                lastPositions[playWish.partyId][
+                    playWishWithNormalizedTimestamp.mediaItemId
+                ]
+            ) {
+                playWishWithNormalizedTimestamp.lastPosition = {
+                    itemId: playWishWithNormalizedTimestamp.mediaItemId,
+                    position:
+                        lastPositions[playWishWithNormalizedTimestamp.partyId][
+                            playWishWithNormalizedTimestamp.mediaItemId
+                        ]
+                };
+            } else {
+                if (playWishWithNormalizedTimestamp.lastPosition) {
+                    delete playWishWithNormalizedTimestamp.lastPosition;
+                }
+            }
 
             currentPlayWishes[
                 playWish.partyId
