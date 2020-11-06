@@ -2,6 +2,7 @@ import React, { ReactElement, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 import { rndHandleStyles } from '../../../common/helpers';
+import WebRtcOtherVideo from '../WebRtcOtherVideo/WebRtcOtherVideo';
 import WebRtcVideoOverlayMenu from '../WebRtcVideoOverlayMenu/WebRtcVideoOverlayMenu';
 
 interface Props {
@@ -76,9 +77,20 @@ export default function WebRtc({
         });
     }
 
+    let maxVideoWidth = '50vw';
+    let maxVideoHeight = '100vh';
+
+    if (otherVideosAmount === 3 || otherVideosAmount === 4) {
+        maxVideoWidth = '50vw';
+        maxVideoHeight = '50vh';
+    } else if (otherVideosAmount === 5 || otherVideosAmount === 6) {
+        maxVideoWidth = '34vw';
+        maxVideoHeight = '50vh';
+    }
+
     const otherVideos = (
         <div
-            className={webRtcIsFullscreen ? ' w-full h-full' : ''}
+            className={webRtcIsFullscreen ? ' w-full h-full flex' : ''}
             onMouseOver={(): void => setDisplayOverlayMenu(true)}
             onMouseLeave={(): void => setDisplayOverlayMenu(false)}
         >
@@ -92,11 +104,10 @@ export default function WebRtc({
             />
             <div
                 className={
-                    'flex' +
-                    (displayVertically ? ' flex-col' : ' flex-row') +
-                    (webRtcIsFullscreen
-                        ? ' my-auto relative w-full h-full z-40'
-                        : '')
+                    webRtcIsFullscreen
+                        ? ' flex mx-auto flex-wrap content-start my-auto relative z-40'
+                        : (displayVertically ? ' flex-col' : ' flex-row') +
+                          ' flex'
                 }
                 onMouseDown={(): void => {
                     if (webRtcIsFullscreen) {
@@ -108,58 +119,20 @@ export default function WebRtc({
                     const isOwnVideo =
                         displayedMediaStream.webRtcId === ourWebRtcId;
 
-                    if (
-                        memberStatus &&
-                        memberStatus[
-                            userIdWebRtcIdMap[displayedMediaStream.webRtcId]
-                        ].online &&
-                        displayedMediaStream.mediaStream.getVideoTracks()
-                            .length &&
-                        !isOwnVideo
-                    ) {
+                    return [1, 2, 3, 4].map((number) => {
                         return (
-                            <div
+                            <WebRtcOtherVideo
                                 key={displayedMediaStream.webRtcId}
-                                className={
-                                    'overflow-hidden bg-transparent rounded flex ' +
-                                    (webRtcIsFullscreen
-                                        ? ''
-                                        : displayVertically
-                                        ? 'mb-2'
-                                        : 'mr-2')
-                                }
-                                style={{
-                                    height: '100%',
-                                    width: '100%'
-                                }}
-                            >
-                                <video
-                                    className="flex-1"
-                                    ref={(video): void => {
-                                        if (video) {
-                                            if (
-                                                video.srcObject !==
-                                                mediaStreamsRef.current[
-                                                    displayedMediaStream
-                                                        .webRtcId
-                                                ]
-                                            ) {
-                                                video.srcObject =
-                                                    mediaStreamsRef.current[
-                                                        displayedMediaStream.webRtcId
-                                                    ];
-                                            }
-                                        }
-                                    }}
-                                    onLoadedMetadata={(event): void => {
-                                        event.currentTarget.play();
-                                    }}
-                                ></video>
-                            </div>
+                                displayVertically={displayVertically}
+                                displayedMediaStream={displayedMediaStream}
+                                isOwnVideo={isOwnVideo}
+                                mediaStreamsRef={mediaStreamsRef}
+                                memberStatus={memberStatus}
+                                userIdWebRtcIdMap={userIdWebRtcIdMap}
+                                webRtcIsFullscreen={webRtcIsFullscreen}
+                            ></WebRtcOtherVideo>
                         );
-                    } else {
-                        return null;
-                    }
+                    });
                 })}
             </div>
         </div>
