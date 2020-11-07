@@ -35,7 +35,7 @@ export default function WebRtcOtherVideo({
             }}
         >
             <video
-                style={{ flex: 0 }}
+                style={{ flex: '1 1 100%' }}
                 ref={(video): void => {
                     if (video) {
                         if (
