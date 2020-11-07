@@ -8,6 +8,7 @@ interface Props {
     isOwnVideo: boolean;
     webRtcIsFullscreen: boolean;
     displayVertically: boolean;
+    otherVideosAmount: number;
 }
 
 export default function WebRtcOtherVideo({
@@ -17,8 +18,24 @@ export default function WebRtcOtherVideo({
     mediaStreamsRef,
     isOwnVideo,
     webRtcIsFullscreen,
-    displayVertically
+    displayVertically,
+    otherVideosAmount
 }: Props): ReactElement | null {
+    let maxVideoWidth = '50vw';
+    let maxVideoHeight = '50vh';
+
+    if (
+        otherVideosAmount === 2 ||
+        otherVideosAmount === 3 ||
+        otherVideosAmount === 4
+    ) {
+        maxVideoWidth = '50vw';
+        maxVideoHeight = otherVideosAmount > 2 ? '50vh' : '100vh';
+    } else if (otherVideosAmount === 5 || otherVideosAmount === 6) {
+        maxVideoWidth = '34vw';
+        maxVideoHeight = '50vh';
+    }
+
     return memberStatus &&
         memberStatus[userIdWebRtcIdMap[displayedMediaStream.webRtcId]].online &&
         displayedMediaStream.mediaStream.getVideoTracks().length &&
@@ -30,12 +47,12 @@ export default function WebRtcOtherVideo({
                 (webRtcIsFullscreen ? '' : displayVertically ? 'mb-2' : 'mr-2')
             }
             style={{
-                flex: '1 1 50vw',
-                height: webRtcIsFullscreen ? '50vh' : 'auto'
+                flex: '1 1 ' + maxVideoWidth,
+                height: webRtcIsFullscreen ? maxVideoHeight : 'auto'
             }}
         >
             <video
-                style={{ flex: '1 1 100%' }}
+                style={{ flex: '0 1 ' + maxVideoWidth }}
                 ref={(video): void => {
                     if (video) {
                         if (

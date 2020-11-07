@@ -77,20 +77,13 @@ export default function WebRtc({
         });
     }
 
-    let maxVideoWidth = '50vw';
-    let maxVideoHeight = '100vh';
-
-    if (otherVideosAmount === 3 || otherVideosAmount === 4) {
-        maxVideoWidth = '50vw';
-        maxVideoHeight = '50vh';
-    } else if (otherVideosAmount === 5 || otherVideosAmount === 6) {
-        maxVideoWidth = '34vw';
-        maxVideoHeight = '50vh';
-    }
+    otherVideosAmount = 4;
 
     const otherVideos = (
         <div
-            className={webRtcIsFullscreen ? ' w-full h-full flex' : ''}
+            className={
+                webRtcIsFullscreen ? ' bg-black z-40 w-full h-full flex' : ''
+            }
             onMouseOver={(): void => setDisplayOverlayMenu(true)}
             onMouseLeave={(): void => setDisplayOverlayMenu(false)}
         >
@@ -105,7 +98,8 @@ export default function WebRtc({
             <div
                 className={
                     webRtcIsFullscreen
-                        ? ' flex mx-auto flex-wrap content-start my-auto relative z-40'
+                        ? ' flex mx-auto content-start my-auto relative z-40' +
+                          (otherVideosAmount > 2 ? ' flex-wrap' : '')
                         : (displayVertically ? ' flex-col' : ' flex-row') +
                           ' flex'
                 }
@@ -130,6 +124,7 @@ export default function WebRtc({
                                 memberStatus={memberStatus}
                                 userIdWebRtcIdMap={userIdWebRtcIdMap}
                                 webRtcIsFullscreen={webRtcIsFullscreen}
+                                otherVideosAmount={otherVideosAmount}
                             ></WebRtcOtherVideo>
                         );
                     });

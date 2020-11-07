@@ -77,7 +77,7 @@ export default function WebRtcVideoOverlayMenu({
                 titleText={t('webRtc.fullscreen')}
                 margins={'mt-0' + (otherVideosAmount > 1 ? ' mr-2' : '')}
             />
-            {otherVideosAmount > 1 && (
+            {otherVideosAmount > 1 && !webRtcState.isFullscreen && (
                 <BarButton
                     size="small"
                     isActive={displayVertically}
