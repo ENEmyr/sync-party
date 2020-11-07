@@ -48,11 +48,17 @@ export default function WebRtcOtherVideo({
             }
             style={{
                 flex: '1 1 ' + maxVideoWidth,
-                height: webRtcIsFullscreen ? maxVideoHeight : 'auto'
+                height: webRtcIsFullscreen
+                    ? maxVideoHeight
+                    : displayVertically
+                    ? ' '
+                    : 'auto'
             }}
         >
             <video
-                style={{ flex: '0 1 ' + maxVideoWidth }}
+                style={{
+                    flex: '0 1 ' + (displayVertically ? maxVideoWidth : 'auto')
+                }}
                 ref={(video): void => {
                     if (video) {
                         if (

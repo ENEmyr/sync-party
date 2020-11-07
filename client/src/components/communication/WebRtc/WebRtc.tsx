@@ -100,8 +100,9 @@ export default function WebRtc({
                     webRtcIsFullscreen
                         ? ' flex mx-auto content-start my-auto relative z-40' +
                           (otherVideosAmount > 2 ? ' flex-wrap' : '')
-                        : (displayVertically ? ' flex-col' : ' flex-row') +
-                          ' flex'
+                        : displayVertically
+                        ? ''
+                        : ' flex-row flex'
                 }
                 onMouseDown={(): void => {
                     if (webRtcIsFullscreen) {
