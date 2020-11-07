@@ -30,8 +30,8 @@ export default function WebRtcOtherVideo({
                 (webRtcIsFullscreen ? '' : displayVertically ? 'mb-2' : 'mr-2')
             }
             style={{
-                maxWidth: '50vw',
-                maxHeight: '50vh'
+                flex: '1 1 50vw',
+                height: webRtcIsFullscreen ? '50vh' : 'auto'
             }}
         >
             <video
