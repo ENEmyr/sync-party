@@ -255,7 +255,7 @@ export default function AddMedia({
 
         // YT: Remove list-related URL params
         if (
-            url.indexOf('https://www.youtube.com') === 0 &&
+            url.indexOf('https://www.youtube.com/watch?') === 0 &&
             url.indexOf('&list=') > -1
         ) {
             url = url.slice(0, url.indexOf('&list='));
@@ -269,7 +269,7 @@ export default function AddMedia({
 
         setMediaItem(webMediaItem);
 
-        if (url.indexOf('https://www.youtube.com') === 0) {
+        if (url.indexOf('https://www.youtube.com/watch?') === 0) {
             setFetchingLinkMetadata(true);
 
             try {
@@ -293,6 +293,17 @@ export default function AddMedia({
             } catch (error) {
                 setMediaItem({ ...webMediaItem, name: '' });
                 setFetchingLinkMetadata(false);
+            }
+        } else if (url.indexOf('https://www.youtube.com/playlist?') === 0) {
+            try {
+                const response = await Axios.post(
+                    process.env.REACT_APP_API_ROUTE + 'playlistData',
+                    { url: url },
+                    { ...axiosConfig(), timeout: 3000 }
+                );
+                console.log(response);
+            } catch (error) {
+                console.log(error);
             }
         }
     };

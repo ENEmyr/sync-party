@@ -602,6 +602,10 @@ const runApp = async () => {
         await externalDataController.getLinkMetadata(req, res, logger);
     });
 
+    app.post('/api/playlistData', isAuthenticated, async (req, res) => {
+        await externalDataController.getPlaylistData(req, res, logger);
+    });
+
     // Route everything not caught by above routes to index.html
     if (process.env.NODE_ENV === 'production') {
         app.get('*', rateLimiters.indexRateLimiter, (req, res) => {
