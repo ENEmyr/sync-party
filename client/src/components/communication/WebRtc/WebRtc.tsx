@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { MutableRefObject, ReactElement, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 import { rndHandleStyles } from '../../../common/helpers';
@@ -52,6 +52,8 @@ export default function WebRtc({
         (state: RootAppState) => state.globalState.webRtc.isFullscreen || false
     );
 
+    const rndRef: MutableRefObject<Rnd | null> = useRef(null);
+
     const displayedMediaStreams: {
         webRtcId: string;
         mediaStream: MediaStream;
@@ -89,7 +91,25 @@ export default function WebRtc({
         >
             <WebRtcVideoOverlayMenu
                 displayVertically={displayVertically}
-                setDisplayVertically={setDisplayVertically}
+                setDisplayVertically={(): void => {
+                    if (rndRef.current) {
+                        let newSize = {
+                            width: '50vw',
+                            height: 'auto'
+                        };
+
+                        if (!displayVertically) {
+                            newSize = {
+                                width: '100px',
+                                height: 'auto'
+                            };
+                        }
+
+                        rndRef.current.updateSize(newSize);
+                        rndRef.current.forceUpdate();
+                    }
+                    setDisplayVertically(!displayVertically);
+                }}
                 isActive={displayOverlayMenu}
                 displayOwnVideo={displayOwnVideo}
                 setDisplayOwnVideo={setDisplayOwnVideo}
@@ -207,12 +227,14 @@ export default function WebRtc({
                     ) : (
                         <div className="mt-12 absolute top-0 left-0">
                             <Rnd
+                                ref={rndRef}
                                 default={{
                                     x: 0,
                                     y: 0,
                                     width: '50vh',
                                     height: 'auto'
                                 }}
+                                maxWidth={'90vw'}
                                 resizeHandleStyles={rndHandleStyles}
                                 className="bg-transparent-600 z-40"
                             >
