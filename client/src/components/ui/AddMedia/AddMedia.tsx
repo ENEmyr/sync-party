@@ -22,6 +22,7 @@ import AddMediaTabFile from '../AddMediaTabFile/AddMediaTabFile';
 
 type Props = {
     isActive: boolean;
+    partyItemsSet: Set<string>;
     setAddMediaIsActive: Function;
     socket: SocketIOClient.Socket | null;
     setPlayerFocused: Function;
@@ -30,6 +31,7 @@ type Props = {
 
 export default function AddMedia({
     isActive,
+    partyItemsSet,
     setAddMediaIsActive,
     socket,
     setPlayerFocused,
@@ -72,10 +74,7 @@ export default function AddMedia({
         if (userItems && party)
             if (
                 userItems.filter(
-                    (userItem: MediaItem) =>
-                        !party.items.find(
-                            (item: MediaItem) => item.id === userItem.id
-                        )
+                    (userItem: MediaItem) => !partyItemsSet.has(userItem.id)
                 ).length
             ) {
                 setActiveTab('user');
@@ -251,7 +250,15 @@ export default function AddMedia({
     const handleLinkInput = async (
         event: React.ChangeEvent<HTMLInputElement>
     ): Promise<void> => {
-        const url = event.target.value;
+        let url = event.target.value;
+
+        // YT: Remove list-related URL params
+        if (
+            url.indexOf('https://www.youtube.com') === 0 &&
+            url.indexOf('&list=') > -1
+        ) {
+            url = url.slice(0, url.indexOf('&list='));
+        }
 
         const webMediaItem: NewMediaItem = {
             ...mediaItem,
@@ -333,14 +340,7 @@ export default function AddMedia({
                             <>
                                 {activeTab === 'user' && (
                                     <AddMediaTabUser
-                                        userItemsNotInParty={userItems.filter(
-                                            (userItem: MediaItem) =>
-                                                !party.items.find(
-                                                    (partyItem: MediaItem) =>
-                                                        partyItem.id ===
-                                                        userItem.id
-                                                )
-                                        )}
+                                        partyItemsSet={partyItemsSet}
                                         addUserItem={addUserItem}
                                         setPlayerFocused={(
                                             focused: boolean
