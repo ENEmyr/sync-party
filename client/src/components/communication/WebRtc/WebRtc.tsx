@@ -98,7 +98,7 @@ export default function WebRtc({
             <div
                 className={
                     webRtcIsFullscreen
-                        ? ' flex mx-auto content-start my-auto relative z-40' +
+                        ? ' flex w-full h-full relative z-40' +
                           (otherVideosAmount > 2 ? ' flex-wrap' : '')
                         : displayVertically
                         ? ''

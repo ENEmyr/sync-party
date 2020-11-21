@@ -21,8 +21,8 @@ export default function WebRtcOtherVideo({
     displayVertically,
     otherVideosAmount
 }: Props): ReactElement | null {
-    let maxVideoWidth = '50vw';
-    let maxVideoHeight = '50vh';
+    let maxVideoWidth = '100vw';
+    let maxVideoHeight = '100vh';
 
     if (
         otherVideosAmount === 2 ||
@@ -32,7 +32,7 @@ export default function WebRtcOtherVideo({
         maxVideoWidth = '50vw';
         maxVideoHeight = otherVideosAmount > 2 ? '50vh' : '100vh';
     } else if (otherVideosAmount === 5 || otherVideosAmount === 6) {
-        maxVideoWidth = '34vw';
+        maxVideoWidth = '33.3vw';
         maxVideoHeight = '50vh';
     }
 
@@ -43,10 +43,16 @@ export default function WebRtcOtherVideo({
         <div
             key={displayedMediaStream.webRtcId}
             className={
-                'overflow-hidden bg-transparent rounded flex justify-start ' +
-                (webRtcIsFullscreen ? '' : displayVertically ? 'mb-2' : 'mr-2')
+                'overflow-hidden bg-transparent flex' +
+                (webRtcIsFullscreen ? '' : ' rounded')
             }
             style={{
+                maxWidth: maxVideoWidth,
+                margin: webRtcIsFullscreen
+                    ? '0 auto'
+                    : displayVertically
+                    ? '0 0 0.5rem 0'
+                    : '0 0.5rem 0 0',
                 flex: '1 1 ' + maxVideoWidth,
                 height: webRtcIsFullscreen
                     ? maxVideoHeight
@@ -56,8 +62,9 @@ export default function WebRtcOtherVideo({
             }}
         >
             <video
+                className="object-cover"
                 style={{
-                    flex: '0 1 ' + (displayVertically ? maxVideoWidth : 'auto')
+                    flex: '1 1 auto'
                 }}
                 ref={(video): void => {
                     if (video) {
