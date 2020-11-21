@@ -79,7 +79,7 @@ export default function WebRtc({
         });
     }
 
-    otherVideosAmount = 4;
+    // otherVideosAmount = 4;
 
     const otherVideos = (
         <div
@@ -134,7 +134,16 @@ export default function WebRtc({
                     const isOwnVideo =
                         displayedMediaStream.webRtcId === ourWebRtcId;
 
-                    return [1, 2, 3, 4].map((number) => {
+                    // return [1, 2, 3, 4].map((number) => {
+                    if (
+                        memberStatus &&
+                        memberStatus[
+                            userIdWebRtcIdMap[displayedMediaStream.webRtcId]
+                        ].online &&
+                        displayedMediaStream.mediaStream.getVideoTracks()
+                            .length &&
+                        !isOwnVideo
+                    ) {
                         return (
                             <WebRtcOtherVideo
                                 key={displayedMediaStream.webRtcId}
@@ -148,7 +157,10 @@ export default function WebRtc({
                                 otherVideosAmount={otherVideosAmount}
                             ></WebRtcOtherVideo>
                         );
-                    });
+                    } else {
+                        return null;
+                    }
+                    // });
                 })}
             </div>
         </div>
