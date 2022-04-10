@@ -6,6 +6,7 @@ const createUser = async (
   role: UserRole,
   passwordRaw: string
 ) => {
+  username = username.toLowerCase();
   const user: NewUser = {} as NewUser;
   const passwordHashed = bcrypt.hashSync(passwordRaw, 10);
   const existed = await models.User.findOne({ where: { username: username } })
@@ -24,6 +25,7 @@ const createUser = async (
 };
 
 const deleteUser = async (models: Models, username: string) => {
+  username.toLowerCase();
   try {
     const user = await models.User.findOne({ where: { username } });
 
@@ -61,6 +63,7 @@ const changePassword = async (
   username: string,
   newPasswordRaw: string
 ) => {
+  username.toLowerCase();
   const user = await models.User.findOne({ where: { username } });
   if (!user) {
     throw new Error(`User ${username} does not exist!`);
