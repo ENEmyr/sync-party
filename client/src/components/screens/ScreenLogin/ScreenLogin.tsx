@@ -73,6 +73,15 @@ export default function ScreenLogin(): JSX.Element {
         }
     };
 
+    const handleRegisButtonClick = (event: React.MouseEvent): void => {
+        event.preventDefault();
+        if (password !== '') {
+            register();
+        } else {
+            setAlert(t('validation.passwordMissing'));
+        }
+    };
+
     const submit = async (): Promise<void> => {
         try {
             const response = await Axios.post(
@@ -111,10 +120,31 @@ export default function ScreenLogin(): JSX.Element {
         }
     };
 
+  const register = async (): Promise<void> => {
+    try {
+      const response = await Axios.post(
+        process.env.REACT_APP_SERVER_URL + '/api/register',
+        {
+          username: username,
+          password: password
+        },
+        axiosConfig()
+      )
+      if (response.data.success === true) {
+        submit()
+      } else {
+        setAlert(t(`${response.data.msg}`));
+      }
+    } catch (error) {
+      setAlert(t('apiResponseMessages.error'))
+    }
+  }
+
     return (
         <div className="m-auto">
             <div className="mx-auto">
                 <img
+                    className="w-24 h-24 md:w-48 md:h-auto md:rounded-none rounded-full mx-auto"
                     src={process.env.PUBLIC_URL + '/logo.png'}
                     alt="Logo"
                 ></img>
@@ -128,18 +158,6 @@ export default function ScreenLogin(): JSX.Element {
                             className="mb-3"
                         ></Alert>
                     )}
-                    <div className="mb-2">
-                        {displayState === 'username' && (
-                            <label htmlFor="username" className="text-lg">
-                                {t('common.username')}
-                            </label>
-                        )}
-                        {displayState === 'password' && (
-                            <label htmlFor="password" className="text-lg">
-                                {t('common.password')}
-                            </label>
-                        )}
-                    </div>
                     {displayState === 'username' && (
                         <>
                             <div className="flex-row">
@@ -150,6 +168,7 @@ export default function ScreenLogin(): JSX.Element {
                                     type="text"
                                     autoFocus={true}
                                     onChange={handleUsernameChange}
+                                    placeholder="Username"
                                     value={username}
                                 ></InputText>
                             </div>
@@ -170,6 +189,7 @@ export default function ScreenLogin(): JSX.Element {
                                     type="password"
                                     autoFocus
                                     onChange={handlePasswordChange}
+                                    placeholder="Password"
                                     value={password}
                                 ></InputText>
                             </div>
@@ -182,11 +202,18 @@ export default function ScreenLogin(): JSX.Element {
                                     text={t('common.back')}
                                 ></Button>
                                 <Button
-                                    className="ml-auto text-green-500 w-40"
+                                    className="ml-auto text-green-500 w-20"
                                     color="text-green-500 border-green-500 hover:text-green-400 hover:border-green-400"
                                     type="submit"
                                     onClick={handleSubmitButtonClick}
-                                    text={t('common.submit')}
+                                    text={t('Sign-In')}
+                                ></Button>
+                                <Button
+                                    className="ml-auto text-blue-500 w-20"
+                                    color="text-blue-500 border-blue-500 hover:text-blue-400 hover:border-blue-400"
+                                    type="submit"
+                                    onClick={handleRegisButtonClick}
+                                    text={t('Register')}
                                 ></Button>
                             </div>
                         </>
